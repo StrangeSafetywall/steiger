@@ -1,0 +1,51 @@
+#!/usr/bin/sh
+#
+
+source steiger-functions
+
+show_version () {
+  cat <<-EOS
+steiger, versão $STEIGER_VERSION
+Copyright (c) 2020 Strange Safetywall, Inc.
+Licença GPLv3+: GNU GPL versão 3 ou posterior <http://gnu.org/licenses/gpl.html>
+EOS
+}
+
+usage () {
+  cat <<-EOS
+usage: steiger [--version] [--help]
+       <command> [<args>]
+
+Opções:
+    -v, --version    Exibe a versão atual do steiger.
+    -h, --help       Exibe esta mensagem de ajuda.
+
+Estes são os comandos que o steiger obedece:
+
+    senderscore      Comando para verificar o score de um determinado
+                     endereço IP no serviço senderscore.
+    help             Exibe esta mensagem de ajuda.
+
+Veja 'steiger <command> help' para ajuda detalhada de algum comando.
+EOS
+}
+
+case "$#" in
+  0)
+    usage ;;
+  *)
+    cmd=$"$1"
+    shift
+    case "$cmd" in
+      -v|--version)
+        show_version ;;
+      -h|--help)
+        usage ;;
+      help)
+        usage ;;
+      senderscore)
+        steiger-senderscore $* ;;
+      *)
+        usage ;;
+    esac
+esac

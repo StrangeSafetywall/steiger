@@ -1,0 +1,33 @@
+#!/usr/bin/sh
+readonly STEIGER_VERSION=0.1.0
+
+# Global variables
+SHOW_TIMESTAMP=1
+TIMESTAMP_FORMAT="%T"
+SENDERSCORE_NS=200.221.11.100
+
+# User variables (can overwrite global variables)
+source /etc/steiger.conf
+
+get_timestamp () {
+  echo $(date +$TIMESTAMP_FORMAT)
+}
+
+log () {
+  if [ $SHOW_TIMESTAMP -eq 1 ]; then
+    echo -n "$(get_timestamp) "
+  fi
+  echo $*
+}
+
+get_reverso () {
+  echo $1 | awk -F. '{print $4"."$3"."$2"."$1}'
+}
+
+get_senderscore () {
+  reverso=$(get_reverso $1)
+  dig ${reverso}.score.senderscore.com @${SENDERSCORE_NS} |
+    grep ";; ANSWER" -A1 |
+    grep senderscore |
+    cut -d '.' -f11
+}

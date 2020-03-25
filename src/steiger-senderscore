@@ -1,0 +1,48 @@
+#!/usr/bin/sh
+#
+source steiger-functions
+
+usage () {
+  cat <<-EOS
+usage: steiger senderscore <ip1> [<ip2>] [...<ipN>]
+
+Opções:
+    -h, --help       Exibe esta mensagem de ajuda.
+EOS
+}
+
+main () {
+  score=0
+  sum=0
+  average=0
+  total=$#
+  log "calculando a média do score de $total ip(s):"
+  for ip in $*; do
+    score=$(get_senderscore $ip)
+    if [ ! "$score" == "" ]; then
+      log "IP $ip score: ${score}%"
+      sum=$(($sum + $score))
+    else
+      log "IP ${ip} não retornou resultado"
+      total=$(($total - 1))
+    fi
+  done
+  average=$(($sum / $total))
+  log "Média do score: ${average}%"
+}
+
+case "$#" in
+  0)
+    usage ;;
+  *)
+    cmd="$1"
+    shift
+    case "$cmd" in
+      -h|--help)
+        usage ;;
+      help)
+        usage ;;
+      *)
+        main $cmd $* ;;
+    esac
+esac
